@@ -1,9 +1,15 @@
 package com.epam;
 
 import com.epam.linearregression.Chart;
+import com.epam.linearregression.Point;
+import com.epam.linearregression.RealRatesContainer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.List;
 
 public class Main {
 
@@ -15,6 +21,15 @@ public class Main {
         System.out.println("interval.minutes: " + setup.getIntervalInMinutes());
         System.out.println("frame.days: " + setup.getFrameInDays());
         System.out.println("--------------------------------------------");
+
+        InputStream inputStream = Main.class.getClassLoader().getResourceAsStream("dollar-euro.csv");
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+
+        RealRatesContainer realRatesContainer = new RealRatesContainer();
+        bufferedReader.lines().forEach(line -> {
+            realRatesContainer.add(line.split(","));
+        });
+        List<Point> points = realRatesContainer.getPoints();
 
         XYSeriesCollection xySeriesCollection = new XYSeriesCollection();
 
