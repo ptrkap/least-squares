@@ -1,19 +1,19 @@
 package com.epam.linearregression;
 
-class Coefficients {
+public class Coefficients {
     private double a;
     private double b;
 
-    Coefficients(double a, double b) {
+    public Coefficients(double a, double b) {
         this.a = a;
         this.b = b;
     }
 
-    double getA() {
+    public double getA() {
         return a;
     }
 
-    double getB() {
+    public double getB() {
         return b;
     }
 }

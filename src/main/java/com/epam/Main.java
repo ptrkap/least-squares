@@ -1,9 +1,6 @@
 package com.epam;
 
-import com.epam.linearregression.Chart;
-import com.epam.linearregression.Point;
-import com.epam.linearregression.PointsToXYSeriesConverter;
-import com.epam.linearregression.RealRatesContainer;
+import com.epam.linearregression.*;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import java.io.BufferedReader;
@@ -29,9 +26,19 @@ public class Main {
         bufferedReader.lines().forEach(line -> {
             realRatesContainer.add(line.split(","));
         });
-        List<Point> points = realRatesContainer.getPoints();
+        List<Point> realRatesPoints = realRatesContainer.getPoints();
         PointsToXYSeriesConverter pointsToXYSeriesConverter = new PointsToXYSeriesConverter();
-        XYSeries realRates = pointsToXYSeriesConverter.convert(points, "Real rates");
+        XYSeries realRatesXY = pointsToXYSeriesConverter.convert(realRatesPoints, "Real rates");
+
+        LeastSquares leastSquares = new LeastSquares();
+        Coefficients coefficients = leastSquares.calculate(realRatesPoints);
+        LinearTransformation linearTransformation = new LinearTransformation();
+        PointsTransformations pointsTransformations = new PointsTransformations();
+        List<Double> days = pointsTransformations.transformToDays(realRatesPoints);
+        List<Double> regressionRates = linearTransformation.transform(days, coefficients);
+        List<Point> regressionRatesPoints = pointsTransformations.transformToPoints(days, regressionRates);
+        XYSeries regressionRatesXY = pointsToXYSeriesConverter.convert(regressionRatesPoints, "Regression rates");
+//        LinearTransformation
 
 //        XYSeries regressionRates = new XYSeries("Regression rates");
 //        regressionRates.add(4.5, 5.5);
@@ -42,7 +49,8 @@ public class Main {
 //        predictedRates.add(9.5, 10.5);
 
         XYSeriesCollection xySeriesCollection = new XYSeriesCollection();
-        xySeriesCollection.addSeries(realRates);
+        xySeriesCollection.addSeries(realRatesXY);
+        xySeriesCollection.addSeries(regressionRatesXY);
 //        xySeriesCollection.addSeries(regressionRates);
 //        xySeriesCollection.addSeries(predictedRates);
 

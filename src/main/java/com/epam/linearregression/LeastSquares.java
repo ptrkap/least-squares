@@ -1,10 +1,10 @@
 package com.epam.linearregression;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class LeastSquares {
 
-    public Coefficients calculate(ArrayList<Point> points) {
+    public Coefficients calculate(List<Point> points) {
         if (points.size() < 2) {
             throw new NotEnoughPointsException();
         }
@@ -22,7 +22,7 @@ public class LeastSquares {
         return new Coefficients(a ,b);
     }
 
-    private double calculateNumerator(ArrayList<Point> points, double daysMean, double dollarEuroRatesMean) {
+    private double calculateNumerator(List<Point> points, double daysMean, double dollarEuroRatesMean) {
         double sum = 0;
         for (Point point : points) {
             sum += (point.getDay() - daysMean)*(point.getDollarEuroRate() - dollarEuroRatesMean);
@@ -30,7 +30,7 @@ public class LeastSquares {
         return sum;
     }
 
-    private double calculateDenominator(ArrayList<Point> points, double daysMean) {
+    private double calculateDenominator(List<Point> points, double daysMean) {
         double sum = 0;
         for (Point point : points) {
             sum += Math.pow(point.getDay() - daysMean, 2);
@@ -38,7 +38,7 @@ public class LeastSquares {
         return sum;
     }
 
-    private double calculateDaysMean(ArrayList<Point> points) {
+    private double calculateDaysMean(List<Point> points) {
         int n = points.size();
         double sum = 0;
         for (Point point : points) {
@@ -47,7 +47,7 @@ public class LeastSquares {
         return sum/n;
     }
 
-    private double calculateDollarEuroRatesMean(ArrayList<Point> points) {
+    private double calculateDollarEuroRatesMean(List<Point> points) {
         int n = points.size();
         double sum = 0;
         for (Point point : points) {
