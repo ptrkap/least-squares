@@ -3,8 +3,12 @@ package com.epam.linearregression;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.util.ShapeUtilities;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -21,6 +25,8 @@ public class Chart {
                 false,
                 false
         );
+        XYPlot plot = (XYPlot)chart.getPlot();
+        plot.getRenderer().setSeriesShape(0, ShapeUtilities.createRegularCross(1, 1));
         JPanel panel = new ChartPanel(chart);
         JLabel predictionLabel = new JLabel(prediction);
         predictionLabel.setFont(new Font("Arial", Font.PLAIN, 18));
