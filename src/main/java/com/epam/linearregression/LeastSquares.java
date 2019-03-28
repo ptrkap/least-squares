@@ -8,17 +8,12 @@ public class LeastSquares {
         if (points.size() < 2) {
             throw new NotEnoughPointsException();
         }
-
         double daysMean = calculateDaysMean(points);
         double dollarEuroRatesMean = calculateDollarEuroRatesMean(points);
-
-
         double numerator = calculateNumerator(points, daysMean, dollarEuroRatesMean);
         double denominator = calculateDenominator(points, daysMean);
-
         double a = numerator/denominator;
         double b = dollarEuroRatesMean - a*daysMean;
-
         return new Coefficients(a ,b);
     }
 
