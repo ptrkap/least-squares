@@ -30,14 +30,12 @@ public class Main {
         PointsToXYSeriesConverter pointsToXYSeriesConverter = new PointsToXYSeriesConverter();
         XYSeries realRatesXY = pointsToXYSeriesConverter.convert(realRatesPoints, "Real rates");
 
-        LeastSquares leastSquares = new LeastSquares();
-
-        XYSeries regressionRatesXY = getRegressionXYSeries(
-                realRatesPoints,
-                leastSquares);
+        List<Point> regressionPoints = getRegressionPoints(realRatesPoints);
+        XYSeries regressionRatesXY  = pointsToXYSeriesConverter.convert(regressionPoints,"Regression rates");
 
         Predictor predictor = new Predictor();
         int predictedDay = 31;
+        LeastSquares leastSquares = new LeastSquares();
 //        Coefficients coefficients = leastSquares.calculate(realRatesPoints.subList(600, 721)); //tmp
         Coefficients coefficients = leastSquares.calculate(realRatesPoints); //tmp
         double rateTomorrow = predictor.predict(coefficients, predictedDay);
@@ -58,16 +56,12 @@ public class Main {
         chart.draw("Forex USD/EUR prediction", prediction, growth, xySeriesCollection);
     }
 
-    private static XYSeries getRegressionXYSeries(
-            List<Point> realRatesPoints,
-            LeastSquares leastSquares) {
+    private static List<Point> getRegressionPoints(List<Point> realRatesPoints) {
+        LeastSquares leastSquares = new LeastSquares();
         LinearTransformation linearTransformation = new LinearTransformation();
         PointsTransformations pointsTransformations = new PointsTransformations();
         List<Double> days = pointsTransformations.transformToDays(realRatesPoints);
 //        Coefficients coefficients = leastSquares.calculate(realRatesPoints.subList(600, 721));
-
-
-
 
         Coefficients coefficients = leastSquares.calculate(realRatesPoints.subList(0, 100)); // tmp
         List<Double> regressionRates = linearTransformation.transform(days.subList(0, 100), coefficients);
@@ -81,7 +75,6 @@ public class Main {
         regressionRatesPoints.addAll(regressionRatesPoints1);
         regressionRatesPoints.addAll(regressionRatesPoints2);
 
-        PointsToXYSeriesConverter pointsToXYSeriesConverter = new PointsToXYSeriesConverter();
-        return pointsToXYSeriesConverter.convert(regressionRatesPoints, "Regression rates");
+        return regressionRatesPoints;
     }
 }
