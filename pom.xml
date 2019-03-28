@@ -64,7 +64,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.epam.LeastSquaresLinearRegression</mainClass>
+                            <mainClass>com.epam.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
