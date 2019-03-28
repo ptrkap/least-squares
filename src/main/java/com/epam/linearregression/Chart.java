@@ -24,7 +24,11 @@ public class Chart {
                 false
         );
         XYPlot plot = (XYPlot)chart.getPlot();
-        plot.getRenderer().setSeriesShape(0, ShapeUtilities.createRegularCross(1, 1));
+        int regularThickness = 1;
+        int redDotThickness = 2;
+        plot.getRenderer().setSeriesShape(2, ShapeUtilities.createRegularCross(regularThickness, regularThickness));
+        plot.getRenderer().setSeriesShape(1, ShapeUtilities.createRegularCross(regularThickness, regularThickness));
+        plot.getRenderer().setSeriesShape(0, ShapeUtilities.createRegularCross(redDotThickness, redDotThickness));
         JPanel panel = new ChartPanel(chart);
         JLabel predictionLabel = new JLabel(prediction);
         predictionLabel.setFont(new Font("Arial", Font.PLAIN, 18));

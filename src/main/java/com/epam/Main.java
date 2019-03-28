@@ -39,19 +39,21 @@ public class Main {
         List<Point> regressionRatesPoints = pointsTransformations.transformToPoints(days, regressionRates);
         XYSeries regressionRatesXY = pointsToXYSeriesConverter.convert(regressionRatesPoints, "Regression rates");
 
+        Predictor predictor = new Predictor();
+        int predictedDay = 31;
+        double rateTomorrow = predictor.predict(coefficients, predictedDay);
         XYSeries predictedRates = new XYSeries("Predicted rates");
-        predictedRates.add(1, 0.88);
-        predictedRates.add(2, 1);
+        predictedRates.add(predictedDay, rateTomorrow);
 
         XYSeriesCollection xySeriesCollection = new XYSeriesCollection();
+        xySeriesCollection.addSeries(predictedRates);
         xySeriesCollection.addSeries(realRatesXY);
         xySeriesCollection.addSeries(regressionRatesXY);
-        xySeriesCollection.addSeries(predictedRates);
 
-        String rate = "0.8832";
-        String percent = "+0.5%";
+        String rate = "0.8832"; // tmp
+        String percent = "+0.5%"; // tmp
         String prediction = String.format("USD/EURO tomorrow: %s [%s]", rate, percent);
-        boolean growth = true; // tmp
+        boolean growth = coefficients.getA() > 0;
 
         Chart chart = new Chart();
         chart.draw("Forex USD/EUR prediction", prediction, growth, xySeriesCollection);
