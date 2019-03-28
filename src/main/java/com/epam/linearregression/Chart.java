@@ -24,8 +24,8 @@ public class Chart {
                 false
         );
         XYPlot plot = (XYPlot)chart.getPlot();
-        int regularThickness = 1;
-        int redDotThickness = 2;
+        float regularThickness = 1f;
+        float redDotThickness = 1.5f;
         plot.getRenderer().setSeriesShape(2, ShapeUtilities.createRegularCross(regularThickness, regularThickness));
         plot.getRenderer().setSeriesShape(1, ShapeUtilities.createRegularCross(regularThickness, regularThickness));
         plot.getRenderer().setSeriesShape(0, ShapeUtilities.createRegularCross(redDotThickness, redDotThickness));

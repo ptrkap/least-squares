@@ -21,26 +21,24 @@ public class Main {
         System.out.println("--------------------------------------------");
 
         InputStream inputStream = Main.class.getClassLoader().getResourceAsStream("dollar-euro.csv");
+        assert inputStream != null;
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
         RealRatesContainer realRatesContainer = new RealRatesContainer();
-        bufferedReader.lines().forEach(line -> {
-            realRatesContainer.add(line.split(","));
-        });
+        bufferedReader.lines().forEach(line -> realRatesContainer.add(line.split(",")));
         List<Point> realRatesPoints = realRatesContainer.getPoints();
         PointsToXYSeriesConverter pointsToXYSeriesConverter = new PointsToXYSeriesConverter();
         XYSeries realRatesXY = pointsToXYSeriesConverter.convert(realRatesPoints, "Real rates");
 
         LeastSquares leastSquares = new LeastSquares();
-        Coefficients coefficients = leastSquares.calculate(realRatesPoints);
-        LinearTransformation linearTransformation = new LinearTransformation();
-        PointsTransformations pointsTransformations = new PointsTransformations();
-        List<Double> days = pointsTransformations.transformToDays(realRatesPoints);
-        List<Double> regressionRates = linearTransformation.transform(days, coefficients);
-        List<Point> regressionRatesPoints = pointsTransformations.transformToPoints(days, regressionRates);
-        XYSeries regressionRatesXY = pointsToXYSeriesConverter.convert(regressionRatesPoints, "Regression rates");
+
+        XYSeries regressionRatesXY = getRegressionXYSeries(
+                realRatesPoints,
+                leastSquares);
 
         Predictor predictor = new Predictor();
         int predictedDay = 31;
+//        Coefficients coefficients = leastSquares.calculate(realRatesPoints.subList(600, 721)); //tmp
+        Coefficients coefficients = leastSquares.calculate(realRatesPoints); //tmp
         double rateTomorrow = predictor.predict(coefficients, predictedDay);
         XYSeries predictedRates = new XYSeries("Predicted rates");
         predictedRates.add(predictedDay, rateTomorrow);
@@ -57,5 +55,19 @@ public class Main {
 
         Chart chart = new Chart();
         chart.draw("Forex USD/EUR prediction", prediction, growth, xySeriesCollection);
+    }
+
+    private static XYSeries getRegressionXYSeries(
+            List<Point> realRatesPoints,
+            LeastSquares leastSquares) {
+        LinearTransformation linearTransformation = new LinearTransformation();
+        PointsTransformations pointsTransformations = new PointsTransformations();
+        List<Double> days = pointsTransformations.transformToDays(realRatesPoints);
+//        Coefficients coefficients = leastSquares.calculate(realRatesPoints.subList(600, 721));
+        Coefficients coefficients = leastSquares.calculate(realRatesPoints.subList(0, 721)); // tmp
+        List<Double> regressionRates = linearTransformation.transform(days, coefficients);
+        List<Point> regressionRatesPoints = pointsTransformations.transformToPoints(days, regressionRates);
+        PointsToXYSeriesConverter pointsToXYSeriesConverter = new PointsToXYSeriesConverter();
+        return pointsToXYSeriesConverter.convert(regressionRatesPoints, "Regression rates");
     }
 }
