@@ -43,4 +43,22 @@ class LeastSquaresTest extends Specification {
         coefficients.a == 2
         coefficients.b == 3
     }
+
+    def "for points (1, 2), (2, 4), (3, 5), (4, 4), (5, 5) should return a = 0.6 and b = 2.2"() {
+        given:
+        LeastSquares leastSquares = new LeastSquares()
+        List<Point> points = new ArrayList<>()
+        points.add(new Point(1, 2))
+        points.add(new Point(2, 4))
+        points.add(new Point(3, 5))
+        points.add(new Point(4, 4))
+        points.add(new Point(5, 5))
+
+        when:
+        Coefficients coefficients = leastSquares.calculate(points)
+
+        then:
+        coefficients.a == 0.6
+        coefficients.b == 2.2
+    }
 }
