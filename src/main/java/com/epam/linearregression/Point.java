@@ -2,19 +2,19 @@ package com.epam.linearregression;
 
 public class Point {
 
-    private double dollarEuroRate;
     private double day;
+    private double dollarEuroRate;
 
-    public Point(double dollarEuroRate, double day) {
-        this.dollarEuroRate = dollarEuroRate;
+    public Point(double day, double dollarEuroRate) {
         this.day = day;
-    }
-
-    public double getDollarEuroRate() {
-        return dollarEuroRate;
+        this.dollarEuroRate = dollarEuroRate;
     }
 
     public double getDay() {
         return day;
+    }
+
+    public double getDollarEuroRate() {
+        return dollarEuroRate;
     }
 }
