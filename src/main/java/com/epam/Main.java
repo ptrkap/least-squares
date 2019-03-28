@@ -17,6 +17,7 @@ public class Main {
         System.out.println("--------------------------------------------");
 
         XYSeriesCollection xySeriesCollection = new XYSeriesCollection();
+
         XYSeries realRates = new XYSeries("Real rates");
         realRates.add(2.5, 3.5);
         realRates.add(4.5, 5.5);
