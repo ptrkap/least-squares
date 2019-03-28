@@ -38,21 +38,15 @@ public class Main {
         List<Double> regressionRates = linearTransformation.transform(days, coefficients);
         List<Point> regressionRatesPoints = pointsTransformations.transformToPoints(days, regressionRates);
         XYSeries regressionRatesXY = pointsToXYSeriesConverter.convert(regressionRatesPoints, "Regression rates");
-//        LinearTransformation
 
-//        XYSeries regressionRates = new XYSeries("Regression rates");
-//        regressionRates.add(4.5, 5.5);
-//        regressionRates.add(6.5, 7.5);
-//
-//        XYSeries predictedRates = new XYSeries("Predicted rates");
-//        predictedRates.add(7.5, 8.5);
-//        predictedRates.add(9.5, 10.5);
+        XYSeries predictedRates = new XYSeries("Predicted rates");
+        predictedRates.add(1, 0.88);
+        predictedRates.add(2, 1);
 
         XYSeriesCollection xySeriesCollection = new XYSeriesCollection();
         xySeriesCollection.addSeries(realRatesXY);
         xySeriesCollection.addSeries(regressionRatesXY);
-//        xySeriesCollection.addSeries(regressionRates);
-//        xySeriesCollection.addSeries(predictedRates);
+        xySeriesCollection.addSeries(predictedRates);
 
         String rate = "0.8832";
         String percent = "+0.5%";
