@@ -2,6 +2,7 @@ package com.epam;
 
 import com.epam.linearregression.Chart;
 import com.epam.linearregression.Point;
+import com.epam.linearregression.PointsToXYSeriesConverter;
 import com.epam.linearregression.RealRatesContainer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -24,30 +25,26 @@ public class Main {
 
         InputStream inputStream = Main.class.getClassLoader().getResourceAsStream("dollar-euro.csv");
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-
         RealRatesContainer realRatesContainer = new RealRatesContainer();
         bufferedReader.lines().forEach(line -> {
             realRatesContainer.add(line.split(","));
         });
         List<Point> points = realRatesContainer.getPoints();
+        PointsToXYSeriesConverter pointsToXYSeriesConverter = new PointsToXYSeriesConverter();
+        XYSeries realRates = pointsToXYSeriesConverter.convert(points, "Real rates");
+
+//        XYSeries regressionRates = new XYSeries("Regression rates");
+//        regressionRates.add(4.5, 5.5);
+//        regressionRates.add(6.5, 7.5);
+//
+//        XYSeries predictedRates = new XYSeries("Predicted rates");
+//        predictedRates.add(7.5, 8.5);
+//        predictedRates.add(9.5, 10.5);
 
         XYSeriesCollection xySeriesCollection = new XYSeriesCollection();
-
-        XYSeries realRates = new XYSeries("Real rates");
-        realRates.add(2.5, 3.5);
-        realRates.add(4.5, 5.5);
-
-        XYSeries regressionRates = new XYSeries("Regression rates");
-        regressionRates.add(4.5, 5.5);
-        regressionRates.add(6.5, 7.5);
-
-        XYSeries predictedRates = new XYSeries("Predicted rates");
-        predictedRates.add(7.5, 8.5);
-        predictedRates.add(9.5, 10.5);
-
         xySeriesCollection.addSeries(realRates);
-        xySeriesCollection.addSeries(regressionRates);
-        xySeriesCollection.addSeries(predictedRates);
+//        xySeriesCollection.addSeries(regressionRates);
+//        xySeriesCollection.addSeries(predictedRates);
 
         String rate = "0.8832";
         String percent = "+0.5%";
