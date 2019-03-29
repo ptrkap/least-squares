@@ -50,6 +50,22 @@ class SamplesCalculatorTest extends Specification {
         samplesPerRegression == 1440
     }
 
+    def "should calculate samples number per regression for update which is every 5 minutes and frame is 5 days - one day ahead"() {
+        given:
+        Properties properties = new Properties()
+        properties.setProperty("interval.minutes", "5")
+        properties.setProperty("frame.days", "5")
+        Setup setup = new Setup(properties)
+        SamplesCalculator samplesCalculator = new SamplesCalculator(setup)
+
+        when:
+        int samplesPerRegression = samplesCalculator.calculateSamplesNumberPerRegressionOneDayAhead()
+
+        then:
+        samplesPerRegression == 1728
+    }
+
+
     def "should calculatate last start point"() {
         given:
         List<Double> days = [1d, 1.5d, 2d, 2.5d, 3d, 3.5d, 4d, 4.5d]
