@@ -30,7 +30,7 @@ public class Main {
         PointsToXYSeriesConverter pointsToXYSeriesConverter = new PointsToXYSeriesConverter();
         XYSeries realRatesXY = pointsToXYSeriesConverter.convert(realRatesPoints, "Real rates");
 
-        List<Point> regressionPoints = getRegressionPoints(realRatesPoints);
+        List<Point> regressionPoints = getRegressionPoints(realRatesPoints, setup);
         XYSeries regressionRatesXY  = pointsToXYSeriesConverter.convert(regressionPoints,"Regression rates");
 
         Predictor predictor = new Predictor();
@@ -56,25 +56,35 @@ public class Main {
         chart.draw("Forex USD/EUR prediction", prediction, growth, xySeriesCollection);
     }
 
-    private static List<Point> getRegressionPoints(List<Point> realRatesPoints) {
-        LeastSquares leastSquares = new LeastSquares();
-        LinearTransformation linearTransformation = new LinearTransformation();
+    private static List<Point> getRegressionPoints(List<Point> realRatesPoints, Setup setup) {
         PointsTransformations pointsTransformations = new PointsTransformations();
         List<Double> days = pointsTransformations.transformToDays(realRatesPoints);
-//        Coefficients coefficients = leastSquares.calculate(realRatesPoints.subList(600, 721));
-
-        Coefficients coefficients = leastSquares.calculate(realRatesPoints.subList(0, 100)); // tmp
-        List<Double> regressionRates = linearTransformation.transform(days.subList(0, 100), coefficients);
-        List<Point> regressionRatesPoints1 = pointsTransformations.transformToPoints(days.subList(0, 100), regressionRates);
-
-        Coefficients coefficients2 = leastSquares.calculate(realRatesPoints.subList(100, 200)); // tmp
-        List<Double> regressionRates2 = linearTransformation.transform(days.subList(100, 200), coefficients2);
-        List<Point> regressionRatesPoints2 = pointsTransformations.transformToPoints(days.subList(100, 200), regressionRates2);
-
+        SamplesCalculator samplesCalculator = new SamplesCalculator(setup);
+        int samplesNumber =  samplesCalculator.calculateSamplesNumberPerRegression();
+        int lastStartPoint = samplesCalculator.calculateLastStartPoint(days, samplesNumber);
         List<Point> regressionRatesPoints = new ArrayList<>();
-        regressionRatesPoints.addAll(regressionRatesPoints1);
-        regressionRatesPoints.addAll(regressionRatesPoints2);
-
+        for (int i = 0; i <= lastStartPoint; i++) {
+            List<Point> regressionRatesPoints1 = createRegressionPoints(
+                    realRatesPoints,
+                    pointsTransformations,
+                    days,
+                    i,
+                    i + samplesNumber);
+            regressionRatesPoints.addAll(regressionRatesPoints1);
+        }
         return regressionRatesPoints;
+    }
+
+    private static List<Point> createRegressionPoints(
+            List<Point> realRatesPoints,
+            PointsTransformations pointsTransformations,
+            List<Double> days,
+            int from,
+            int to) {
+        LinearTransformation linearTransformation = new LinearTransformation();
+        LeastSquares leastSquares = new LeastSquares();
+        Coefficients coefficients = leastSquares.calculate(realRatesPoints.subList(from, to));
+        List<Double> regressionRates = linearTransformation.transform(days.subList(from, to), coefficients);
+        return pointsTransformations.transformToPoints(days.subList(from, to), regressionRates);
     }
 }
