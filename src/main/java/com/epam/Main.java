@@ -28,10 +28,12 @@ public class Main {
         bufferedReader.lines().forEach(line -> realRatesContainer.add(line.split(",")));
         List<Point> realRatesPoints = realRatesContainer.getPoints();
         PointsToXYSeriesConverter pointsToXYSeriesConverter = new PointsToXYSeriesConverter();
-        XYSeries realRatesXY = pointsToXYSeriesConverter.convert(realRatesPoints, "Real rates");
+        XYSeries realRatesXY = new XYSeries("Real rates");
+        pointsToXYSeriesConverter.convert(realRatesPoints, realRatesXY);
 
         List<Point> regressionPoints = getRegressionPoints(realRatesPoints, setup);
-        XYSeries regressionRatesXY  = pointsToXYSeriesConverter.convert(regressionPoints,"Regression rates");
+        XYSeries regressionRatesXY = new XYSeries("Regression rates");
+        pointsToXYSeriesConverter.convert(regressionPoints, regressionRatesXY);
 
         Predictor predictor = new Predictor();
         int predictedDay = 31;
@@ -39,11 +41,17 @@ public class Main {
 //        Coefficients coefficients = leastSquares.calculate(realRatesPoints.subList(600, 721)); //tmp
         Coefficients coefficients = leastSquares.calculate(realRatesPoints); //tmp
         double rateTomorrow = predictor.predict(coefficients, predictedDay);
-        XYSeries predictedRates = new XYSeries("Predicted rates");
-        predictedRates.add(predictedDay, rateTomorrow);
+        XYSeries predictedRatesXY = new XYSeries("Predicted rates");
+        predictedRatesXY.add(predictedDay, rateTomorrow);
+
+
+        List<Point> predictedPoints = new ArrayList<>();
+        predictedPoints.add(new Point(30, 1));
+        pointsToXYSeriesConverter.convert(predictedPoints, predictedRatesXY);
+
 
         XYSeriesCollection xySeriesCollection = new XYSeriesCollection();
-        xySeriesCollection.addSeries(predictedRates);
+        xySeriesCollection.addSeries(predictedRatesXY);
         xySeriesCollection.addSeries(realRatesXY);
         xySeriesCollection.addSeries(regressionRatesXY);
 

@@ -11,7 +11,8 @@ class PointsToXYSeriesConverterTest extends Specification {
         List<Point> points = new ArrayList<>()
 
         when:
-        XYSeries xySeries = converter.convert(points, "Predicted rates")
+        XYSeries xySeries = new XYSeries("Predicted rates")
+        converter.convert(points, xySeries)
 
         then:
         xySeries.getItemCount() == 0
@@ -24,7 +25,8 @@ class PointsToXYSeriesConverterTest extends Specification {
         points.add(new Point(1, 0.88))
 
         when:
-        XYSeries xySeries = converter.convert(points, "Predicted rates")
+        XYSeries xySeries = new XYSeries("Predicted rates")
+        converter.convert(points, xySeries)
 
         then:
         xySeries.getItemCount() == 1
