@@ -23,4 +23,8 @@ public class RatePercentCalculator {
         }
         return percentString;
     }
+
+    public boolean isGrowth() {
+        return rateTomorrow >= rateToday;
+    }
 }

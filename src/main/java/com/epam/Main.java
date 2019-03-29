@@ -35,11 +35,9 @@ public class Main {
         XYSeries regressionRatesXY = new XYSeries("Regression rates");
         pointsToXYSeriesConverter.convert(regressionData.getRegressionPoints(), regressionRatesXY);
 
-        double predictedDay = 31;
-        LeastSquares leastSquares = new LeastSquares();
-        Coefficients coefficients = leastSquares.calculate(realRatesPoints);
-        Predictor predictor = new Predictor();
-        double rateTomorrow = predictor.predict(coefficients, predictedDay);
+        int lastPredicted = regressionData.getPredictedPoints().size() - 1;
+        double rateTomorrow = regressionData.getPredictedPoints().get(lastPredicted).getDollarEuroRate();
+
         XYSeries predictedRatesXY = new XYSeries("Predicted rates");
         pointsToXYSeriesConverter.convert(regressionData.getPredictedPoints(), predictedRatesXY);
 
@@ -50,9 +48,11 @@ public class Main {
 
         RatePercentCalculator ratePercentCalculator = new RatePercentCalculator(realRatesPoints, rateTomorrow);
         String percent = ratePercentCalculator.calculatePercent();
-        String prediction = String.format("USD/EURO tomorrow: %s [%s]", String.format("%.4f", rateTomorrow), percent);
-        boolean growth = coefficients.getA() > 0;
-
+        String prediction = String.format(
+                "USD/EURO tomorrow: %s [%s]",
+                String.format("%.4f", rateTomorrow).replace(",","."),
+                percent);
+        boolean growth = ratePercentCalculator.isGrowth();
         Chart chart = new Chart();
         chart.draw("Forex USD/EUR prediction", prediction, growth, xySeriesCollection);
     }
@@ -75,6 +75,9 @@ public class Main {
                     i + samplesNumber);
             regressionRatesPoints.addAll(regressionDataOfIteration.getRegressionPoints());
             predictedPointsPerIteration.addAll(regressionDataOfIteration.getPredictedPoints());
+            if (i == lastStartPoint) {
+                regressionData.setCoefficients(regressionDataOfIteration.getCoefficients());
+            }
         }
         return regressionData;
     }
@@ -95,8 +98,10 @@ public class Main {
         double predictedDay = days.get(to) + 1;
         double predictedRate = predictor.predict(coefficients, predictedDay);
         predictedPoints.add(new Point(predictedDay, predictedRate));
-        return new RegressionData(
+        RegressionData regressionData = new RegressionData(
                 regressionPoints,
                 predictedPoints);
+        regressionData.setCoefficients(coefficients);
+        return regressionData;
     }
 }

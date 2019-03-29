@@ -17,9 +17,11 @@ class RatePercentCalculatorTest extends Specification {
 
         when:
         String changePercent = calculator.calculatePercent()
+        boolean growth = calculator.isGrowth()
 
         then:
         changePercent == "+3.41%"
+        growth
     }
 
     def "should calculate percent based on rate today (0.91) and rate tomorrow (0.88)"() {
@@ -34,9 +36,11 @@ class RatePercentCalculatorTest extends Specification {
 
         when:
         String changePercent = calculator.calculatePercent()
+        boolean growth = calculator.isGrowth()
 
         then:
         changePercent == "-3.30%"
+        !growth
     }
 
     def "should calculate percent based on rate today (0.91) and rate tomorrow (0.91)"() {
@@ -51,8 +55,10 @@ class RatePercentCalculatorTest extends Specification {
 
         when:
         String changePercent = calculator.calculatePercent()
+        boolean growth = calculator.isGrowth()
 
         then:
         changePercent == "0.00%"
+        growth
     }
 }

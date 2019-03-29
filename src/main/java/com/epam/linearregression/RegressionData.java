@@ -4,10 +4,13 @@ import java.util.List;
 
 public class RegressionData {
 
-    List<Point> regressionPoints;
-    List<Point> predictedPoints;
+    private Coefficients coefficients;
+    private List<Point> regressionPoints;
+    private List<Point> predictedPoints;
 
-    public RegressionData(List<Point> regressionPoints, List<Point> predictedPoints) {
+    public RegressionData(
+            List<Point> regressionPoints,
+            List<Point> predictedPoints) {
         this.regressionPoints = regressionPoints;
         this.predictedPoints = predictedPoints;
     }
@@ -18,5 +21,13 @@ public class RegressionData {
 
     public List<Point> getPredictedPoints() {
         return predictedPoints;
+    }
+
+    public void setCoefficients(Coefficients coefficients) {
+        this.coefficients = coefficients;
+    }
+
+    public Coefficients getCoefficients() {
+        return coefficients;
     }
 }
