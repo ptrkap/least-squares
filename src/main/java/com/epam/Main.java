@@ -31,24 +31,17 @@ public class Main {
         XYSeries realRatesXY = new XYSeries("Real rates");
         pointsToXYSeriesConverter.convert(realRatesPoints, realRatesXY);
 
-        List<Point> regressionPoints = getRegressionData(realRatesPoints, setup);
+        RegressionData regressionData = getRegressionData(realRatesPoints, setup);
         XYSeries regressionRatesXY = new XYSeries("Regression rates");
-        pointsToXYSeriesConverter.convert(regressionPoints, regressionRatesXY);
+        pointsToXYSeriesConverter.convert(regressionData.getRegressionPoints(), regressionRatesXY);
 
         double predictedDay = 31;
         LeastSquares leastSquares = new LeastSquares();
-//        Coefficients coefficients = leastSquares.calculate(realRatesPoints.subList(600, 721)); //tmp
-        Coefficients coefficients = leastSquares.calculate(realRatesPoints); //tmp
+        Coefficients coefficients = leastSquares.calculate(realRatesPoints);
         Predictor predictor = new Predictor();
         double rateTomorrow = predictor.predict(coefficients, predictedDay);
         XYSeries predictedRatesXY = new XYSeries("Predicted rates");
-        predictedRatesXY.add(predictedDay, rateTomorrow);
-
-
-        List<Point> predictedPoints = new ArrayList<>();
-        predictedPoints.add(new Point(30, 1));
-        pointsToXYSeriesConverter.convert(predictedPoints, predictedRatesXY);
-
+        pointsToXYSeriesConverter.convert(regressionData.getPredictedPoints(), predictedRatesXY);
 
         XYSeriesCollection xySeriesCollection = new XYSeriesCollection();
         xySeriesCollection.addSeries(predictedRatesXY);
@@ -64,28 +57,29 @@ public class Main {
         chart.draw("Forex USD/EUR prediction", prediction, growth, xySeriesCollection);
     }
 
-    private static List<Point> getRegressionData(List<Point> realRatesPoints, Setup setup) {
+    private static RegressionData getRegressionData(List<Point> realRatesPoints, Setup setup) {
         PointsTransformations pointsTransformations = new PointsTransformations();
         List<Double> days = pointsTransformations.transformToDays(realRatesPoints);
         SamplesCalculator samplesCalculator = new SamplesCalculator(setup);
         int samplesNumber =  samplesCalculator.calculateSamplesNumberPerRegression();
         int lastStartPoint = samplesCalculator.calculateLastStartPoint(days, samplesNumber);
         List<Point> regressionRatesPoints = new ArrayList<>();
-        List<Point> predictedPoints = new ArrayList<>();
-        RegressionData regressionData = new RegressionData(regressionRatesPoints, predictedPoints);
+        List<Point> predictedPointsPerIteration = new ArrayList<>();
+        RegressionData regressionData = new RegressionData(regressionRatesPoints, predictedPointsPerIteration);
         for (int i = 0; i <= lastStartPoint; i++) {
-            RegressionData regressionDataOfIteration = createRegressionData(
+            RegressionData regressionDataOfIteration = createRegressionDataPerIteration(
                     realRatesPoints,
                     pointsTransformations,
                     days,
                     i,
                     i + samplesNumber);
             regressionRatesPoints.addAll(regressionDataOfIteration.getRegressionPoints());
+            predictedPointsPerIteration.addAll(regressionDataOfIteration.getPredictedPoints());
         }
-        return regressionRatesPoints;
+        return regressionData;
     }
 
-    private static RegressionData createRegressionData(
+    private static RegressionData createRegressionDataPerIteration(
             List<Point> realRatesPoints,
             PointsTransformations pointsTransformations,
             List<Double> days,
@@ -97,10 +91,12 @@ public class Main {
         List<Double> regressionRates = linearTransformation.transform(days.subList(from, to), coefficients);
         List<Point> regressionPoints = pointsTransformations.transformToPoints(days.subList(from, to), regressionRates);
         List<Point> predictedPoints = new ArrayList<>();
-        predictedPoints.add(new Point(29d, 1));
-        RegressionData regressionData = new RegressionData(
+        Predictor predictor = new Predictor();
+        double predictedDay = days.get(to) + 1;
+        double predictedRate = predictor.predict(coefficients, predictedDay);
+        predictedPoints.add(new Point(predictedDay, predictedRate));
+        return new RegressionData(
                 regressionPoints,
                 predictedPoints);
-        return regressionData;
     }
 }

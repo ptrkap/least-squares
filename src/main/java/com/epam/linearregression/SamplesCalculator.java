@@ -17,10 +17,6 @@ public class SamplesCalculator {
         return setup.getFrameInDays() * HOURS_IN_DAY * MINUTES_IN_HOUR / setup.getIntervalInMinutes();
     }
 
-    public int calculateSamplesNumberPerRegressionOneDayAhead() {
-        return (setup.getFrameInDays() + 1) * HOURS_IN_DAY * MINUTES_IN_HOUR / setup.getIntervalInMinutes();
-    }
-
     public int calculateLastStartPoint(List<Double> days, int samplesNumber) {
         return days.size() - 1 - samplesNumber;
     }
